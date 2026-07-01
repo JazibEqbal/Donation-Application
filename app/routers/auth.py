@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
+from app.core.security import hash_password
 from app.dependencies import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate
@@ -25,7 +26,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         name=user.name,
         email=user.email,
-        password=user.password,
+        password=hash_password(user.password),
         role=user.role,
     )
 
