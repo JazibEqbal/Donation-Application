@@ -1,0 +1,4 @@
+.venv
+.idea
+pycache
+food_donation.db
