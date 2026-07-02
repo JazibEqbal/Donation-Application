@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from app.database import Base
 from app.database import engine
 from app.routers.auth import router as auth_router
+from app.models.donation import Donation
+from app.models.user import User
 
 
 Base.metadata.create_all(bind=engine)

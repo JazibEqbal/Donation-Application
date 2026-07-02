@@ -1,6 +1,7 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.orm import relationship
 
 from app.database import Base
 
@@ -17,3 +18,9 @@ class User(Base):
     password = Column(String, nullable=False)
 
     role = Column(String, nullable=False)
+
+    # One user can create many donations
+    donations = relationship(
+        "Donation",
+        back_populates="donor"
+    )
