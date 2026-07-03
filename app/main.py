@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.database import Base
 from app.database import engine
 from app.routers.auth import router as auth_router
+from app.routers.donations import router as donation_router
 from app.models.donation import Donation
 from app.models.user import User
 
@@ -13,7 +14,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
-
+app.include_router(donation_router)
 
 @app.get("/")
 def home():

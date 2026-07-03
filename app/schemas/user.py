@@ -1,12 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from enum import Enum
-
-
-class UserRole(str, Enum):
-    DONOR = "DONOR"
-    NGO = "NGO"
-    VOLUNTEER = "VOLUNTEER"
-    ADMIN = "ADMIN"
+from app.enums.user import UserRole
 
 
 class UserCreate(BaseModel):

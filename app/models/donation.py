@@ -1,8 +1,9 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, ForeignKey, Float, String, DateTime
+from sqlalchemy import Column, Integer, ForeignKey, Float, String, DateTime, Enum
 from sqlalchemy.orm import relationship
 
 from app.database import Base
+from app.enums.donation import DonationStatus
 
 
 class Donation(Base):
@@ -26,7 +27,11 @@ class Donation(Base):
 
     expiry_time = Column(DateTime, nullable=False)
 
-    status = Column(String, nullable=False)
+    status = Column(
+        Enum(DonationStatus),
+        nullable=False,
+        default=DonationStatus.AVAILABLE,
+    )
 
     created_at = Column(
         DateTime,

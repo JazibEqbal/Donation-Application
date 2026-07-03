@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.oauth import oauth2_scheme
 from app.core.security import verify_access_token
 from app.database import SessionLocal
+from app.enums.user import UserRole
 from app.models.user import User
 
 
@@ -43,3 +44,24 @@ def get_current_user(
         )
 
     return user
+
+
+def require_role(required_role: UserRole):
+    """
+    Returns a dependency that allows only users
+    with the specified role.
+    """
+
+    def role_checker(
+        current_user=Depends(get_current_user),
+    ):
+        # Reject users with a different role
+        if current_user.role != required_role:
+            raise HTTPException(
+                status_code=403,
+                detail="Access denied",
+            )
+
+        return current_user
+
+    return role_checker
