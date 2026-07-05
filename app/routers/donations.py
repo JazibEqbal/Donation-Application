@@ -7,6 +7,7 @@ from app.enums.user import UserRole
 from app.models.donation import Donation
 from app.models.user import User
 from app.schemas.donation import DonationResponse, DonationCreate
+from app.service import donation_service
 
 router = APIRouter(
     prefix="/donations",
@@ -26,26 +27,11 @@ def create_donation(
     ),
 ):
 
-    # Create donation object
-    new_donation = Donation(
-        donor_id=current_user.id,
-        food_name=donation.food_name,
-        quantity=donation.quantity,
-        category=donation.category,
-        pickup_address=donation.pickup_address,
-        latitude=donation.latitude,
-        longitude=donation.longitude,
-        expiry_time=donation.expiry_time,
-        status=DonationStatus.AVAILABLE,
+    return donation_service.create_donation(
+        db=db,
+        donation=donation,
+        donor=current_user,
     )
-
-    # Save to database
-    db.add(new_donation)
-    db.commit()
-
-    db.refresh(new_donation)
-
-    return new_donation
 
 
 @router.get(
@@ -55,5 +41,5 @@ def create_donation(
 def get_all_donations(
     db: Session = Depends(get_db),
 ):
-    # Return all donations
-    return db.query(Donation).all()
+    # Fetch all donations
+    return donation_service.get_all_donations(db)
