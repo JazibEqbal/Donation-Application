@@ -31,7 +31,12 @@ def get_all_donations(
     db: Session,
 ) -> list[type[Donation]]:
     """
-    Return all donations.
+    Return all donations in descending order.
     """
 
-    return db.query(Donation).all()
+    return (
+        db.query(Donation)
+        .order_by(Donation.created_at.desc())
+        .all()
+    )
+

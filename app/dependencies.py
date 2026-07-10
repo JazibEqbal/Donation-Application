@@ -65,3 +65,24 @@ def require_role(required_role: UserRole):
         return current_user
 
     return role_checker
+
+
+def require_not_role(disallowed_role: UserRole):
+    """
+    Returns a dependency that allows only users
+    with the specified role.
+    """
+
+    def role_checker(
+        current_user=Depends(get_current_user),
+    ):
+        # Reject users with a different role
+        if current_user.role == disallowed_role:
+            raise HTTPException(
+                status_code=403,
+                detail="You are not authorized to perform this action.",
+            )
+
+        return current_user
+
+    return role_checker
