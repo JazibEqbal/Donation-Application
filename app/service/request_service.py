@@ -1,8 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from app.enums.delivery import DeliveryStatus
 from app.enums.donation import DonationStatus
 from app.enums.request import RequestStatus
+from app.models.delivery import Delivery
 from app.models.donation import Donation
 from app.models.request import DonationRequest
 from app.models.user import User
@@ -114,6 +116,13 @@ def approve_request(
     # update donation status
     donation.status = DonationStatus.APPROVED
 
+    # Create delivery record
+    delivery = Delivery(
+        donation_id=donation.id,
+        status=DeliveryStatus.ASSIGNED,
+    )
+    db.add(delivery)
+    
     # once a request is approved, all other request should be rejected
     (
         db.query(DonationRequest)
