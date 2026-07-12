@@ -29,3 +29,8 @@ class User(Base):
         "DonationRequest",
         back_populates="requester"
     )
+
+    deliveries = relationship(
+        "Delivery",
+        back_populates="volunteer"
+    )

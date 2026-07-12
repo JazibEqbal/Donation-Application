@@ -48,3 +48,8 @@ class Donation(Base):
         "DonationRequest",
         back_populates="donation"
     )
+
+    delivery = relationship(
+        "Delivery",
+        back_populates="donation"
+    )
