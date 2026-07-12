@@ -71,3 +71,66 @@ def create_request(
     db.refresh(new_request)
 
     return new_request
+
+
+def approve_request(
+        db: Session,
+        request_id: int,
+        user: User
+):
+    # find request
+    request = (
+        db.query(DonationRequest)
+        .filter(DonationRequest.id == request_id)
+        .first()
+    )
+
+    if request is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Request not found",
+        )
+
+    # get the related donation
+    donation = request.donation
+
+    # a request can be approved only be the creator i.e, donor
+    if user.id != donation.donor_id:
+        raise HTTPException(
+            status_code=403,
+            detail="You can approve only your own donations",
+        )
+
+    # confirm is donation is still available
+    if donation.status != DonationStatus.AVAILABLE:
+        raise HTTPException(
+            status_code=400,
+            detail="Donation is no longer available",
+        )
+
+    # finally approve requested donation
+    request.status = RequestStatus.APPROVED
+
+    # update donation status
+    donation.status = DonationStatus.APPROVED
+
+    # once a request is approved, all other request should be rejected
+    (
+        db.query(DonationRequest)
+        .filter(
+            DonationRequest.donation_id == donation.id,
+            DonationRequest.id != request.id,
+            DonationRequest.status == RequestStatus.PENDING,
+        )
+        .update(
+            {
+                DonationRequest.status: RequestStatus.REJECTED
+            },
+            synchronize_session=False,
+        )
+    )
+
+    db.commit()
+    db.refresh(request)
+
+    return request

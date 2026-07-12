@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.dependencies import get_db
+from app.dependencies import get_db, require_role
 from app.dependencies import require_not_role
 from app.enums.user import UserRole
 from app.models.user import User
@@ -32,4 +32,22 @@ def create_request(
         db=db,
         request=request,
         requester=current_user,
+    )
+
+
+@router.put(
+    "/{request_id}/approve",
+    response_model=RequestResponse,
+)
+def approve_request(
+    request_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        require_role(UserRole.DONOR)
+    ),
+):
+    return request_service.approve_request(
+        db=db,
+        request_id=request_id,
+        user=current_user,
     )

@@ -6,3 +6,4 @@ class UserRole(str, Enum):
     NGO = "NGO"
     INDEPENDENT = "INDEPENDENT"
     ADMIN = "ADMIN"
+    VOLUNTEER = "VOLUNTEER"
