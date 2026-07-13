@@ -1,59 +1,36 @@
-def test_register_user(client):
+from tests.conftest import donor_data
+from tests.utils import register_user, get_access_token, get_authentication_header
 
-    data = {
-        "name": "tes33t",
-        "password": "test123",
-        "email": "tes33t@email.com",
-        "role": "DONOR"
-    }
 
-    response = client.post(
-        "/register",
-        json=data,
-    )
+def test_register_user(client, donor_data):
+
+    response = register_user(client, donor_data)
 
     assert response.status_code == 200
 
     response_data = response.json()
 
-    assert response_data["name"] == data["name"]
-    assert response_data["email"] == data["email"]
-    assert response_data["role"] == data["role"]
+    assert response_data["name"] == donor_data["name"]
+    assert response_data["email"] == donor_data["email"]
+    assert response_data["role"] == donor_data["role"]
 
     assert "password" not in response_data
 
 
-def test_login_user_success(client):
+def test_login_user_success(client, donor_data):
 
-    data = {
-        "name": "tes33t",
-        "password": "test123",
-        "email": "tes33t@email.com",
-        "role": "DONOR"
-    }
-
-    client.post(
-        "/register",
-        json=data,
+    register_user(
+        client,
+        donor_data
     )
 
-    login_data = {
-        "email": data["email"],
-        "password": data["password"]
-    }
-
-    response = client.post(
-        "/login",
-        json=login_data,
+    token = get_access_token(
+        client,
+        donor_data['email'],
+        donor_data['password'],
     )
-    client.get(
-        "/me")
-    assert response.status_code == 200
 
-    response_data = response.json()
-
-    assert response_data['token_type'] == "bearer"
-    assert "access_token" in response_data
+    assert token is not None
 
 
 def test_login_user_failure(client):
@@ -69,3 +46,35 @@ def test_login_user_failure(client):
 
     assert response.status_code == 401
 
+def test_get_user_profile(
+        client,
+        donor_data
+):
+
+    register_user(
+        client,
+        donor_data
+    )
+
+    token = get_access_token(
+        client,
+        donor_data['email'],
+        donor_data['password'],
+    )
+
+    assert token is not None
+
+    headers = get_authentication_header(token)
+
+    response = client.get(
+        "/me",
+        headers=headers
+    )
+
+    response_data = response.json()
+
+    assert response_data["name"] == donor_data["name"]
+    assert response_data["email"] == donor_data["email"]
+    assert response_data["role"] == donor_data["role"]
+
+    assert "password" not in response_data

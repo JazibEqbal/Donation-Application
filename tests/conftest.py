@@ -45,3 +45,14 @@ def client():
 
     if os.path.exists("test.db"):
         os.remove("test.db")
+
+
+@pytest.fixture
+def donor_data():
+    # Sample donor data
+    return {
+        "name": "Test Donor",
+        "email": "donor@test.com",
+        "password": "Password123",
+        "role": "DONOR",
+    }
