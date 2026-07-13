@@ -29,3 +29,39 @@ def accept_delivery(
         delivery_id=delivery_id,
         volunteer=current_user,
     )
+
+
+@router.put(
+    "/{delivery_id}/pickup",
+    response_model=DeliveryResponse,
+)
+def pickup_delivery(
+    delivery_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        require_role(UserRole.VOLUNTEER)
+    ),
+):
+    return delivery_service.pickup_delivery(
+        db=db,
+        delivery_id=delivery_id,
+        volunteer=current_user,
+    )
+
+
+@router.put(
+    "/{delivery_id}/deliver",
+    response_model=DeliveryResponse,
+)
+def mark_delivered(
+    delivery_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(
+        require_role(UserRole.VOLUNTEER)
+    ),
+):
+    return delivery_service.mark_delivered(
+        db=db,
+        delivery_id=delivery_id,
+        volunteer=current_user,
+    )
