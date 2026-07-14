@@ -22,6 +22,16 @@ def login_user(
     )
 
 
+def get_current_user(
+        client,
+        headers
+):
+    return client.get(
+        "/me",
+        headers=headers
+    )
+
+
 def get_access_token(
         client,
         email,
