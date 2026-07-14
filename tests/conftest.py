@@ -44,7 +44,7 @@ def db():
     transaction.rollback()
     connection.close()
 
-
+# ------ CLIENT FIXTURE --> sends HTTP requests
 @pytest.fixture
 def client(db):
     def override_get_db():
@@ -58,6 +58,7 @@ def client(db):
     app.dependency_overrides.clear()
 
 
+# ------ *DATA FIXTURES --> define user payloads
 @pytest.fixture
 def donor_data():
     return create_user_data(
@@ -85,6 +86,7 @@ def admin_data():
     )
 
 
+# ------ *TOKEN FIXTURES --> create users and return authentication tokens
 @pytest.fixture
 def donor_token(client, donor_data):
     register_user(client, donor_data)
