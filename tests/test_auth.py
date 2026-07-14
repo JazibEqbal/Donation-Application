@@ -1,9 +1,7 @@
-from tests.conftest import donor_data
-from tests.utils import register_user, get_access_token, get_authentication_header
+from tests.utils import register_user, get_access_token, get_authentication_header, login_user, _get
 
 
 def test_register_user(client, donor_data):
-
     response = register_user(client, donor_data)
 
     assert response.status_code == 200
@@ -17,59 +15,33 @@ def test_register_user(client, donor_data):
     assert "password" not in response_data
 
 
-def test_login_user_success(client, donor_data):
+def test_login_user_success(client, donor_token):
 
-    register_user(
-        client,
-        donor_data
-    )
-
-    token = get_access_token(
-        client,
-        donor_data['email'],
-        donor_data['password'],
-    )
+    token = donor_token
 
     assert token is not None
 
 
-def test_login_user_failure(client):
-    data = {
-        "email": "tes335t@email.com",
-        "password": "ffffffff"
-    }
+def test_login_user_failure(client, donor_data):
+    password= "ffffffff"
 
-    response = client.post(
-        "/login",
-        json=data,
-    )
+    register_user(client, donor_data)
+
+    response = login_user(client, email=donor_data["email"], password=password)
 
     assert response.status_code == 401
 
+
 def test_get_user_profile(
         client,
-        donor_data
+        donor_data,
+        donor_token
 ):
-
-    register_user(
-        client,
-        donor_data
-    )
-
-    token = get_access_token(
-        client,
-        donor_data['email'],
-        donor_data['password'],
-    )
+    token = donor_token
 
     assert token is not None
 
-    headers = get_authentication_header(token)
-
-    response = client.get(
-        "/me",
-        headers=headers
-    )
+    response = _get(client, url="/me", token=token)
 
     response_data = response.json()
 

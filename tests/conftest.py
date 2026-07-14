@@ -1,12 +1,13 @@
-import os
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.dependencies import get_db
 from app.database import Base
+from app.dependencies import get_db
 from app.main import app
+from tests.utils import create_user_data, register_user, get_access_token
+
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
@@ -21,49 +22,97 @@ TestingSessionLocal = sessionmaker(
     bind=engine,
 )
 
-# Override get_db dependency
-def override_get_db():
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-@pytest.fixture(scope="session")
-def client():
-    # Create fresh database
+@pytest.fixture(scope="session", autouse=True)
+def setup_database():
     Base.metadata.create_all(bind=engine)
 
-    # Override database dependency
+    yield
+
+    Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture
+def db():
+    connection = engine.connect()
+    transaction = connection.begin()
+
+    session = TestingSessionLocal(bind=connection)
+
+    yield session
+
+    session.close()
+    transaction.rollback()
+    connection.close()
+
+
+@pytest.fixture
+def client(db):
+    def override_get_db():
+        yield db
+
     app.dependency_overrides[get_db] = override_get_db
 
-    with TestClient(app) as test_client:
-        yield test_client
+    with TestClient(app) as client:
+        yield client
 
     app.dependency_overrides.clear()
-
-    if os.path.exists("test.db"):
-        os.remove("test.db")
 
 
 @pytest.fixture
 def donor_data():
-    # Sample donor data
-    return {
-        "name": "Test Donor",
-        "email": "donor@test.com",
-        "password": "Password123",
-        "role": "DONOR",
-    }
+    return create_user_data(
+        "Donor",
+        "donor@test.com",
+        "DONOR",
+    )
 
 
 @pytest.fixture
-def requester_data():
-    # Sample donor data
-    return {
-        "name": "Test Requester",
-        "email": "requester@test.com",
-        "password": "Password123",
-        "role": "NGO",
-    }
+def ngo_data():
+    return create_user_data(
+        "NGO",
+        "ngo@test.com",
+        "NGO",
+    )
+
+
+@pytest.fixture
+def admin_data():
+    return create_user_data(
+        "Admin",
+        "admin@test.com",
+        "ADMIN",
+    )
+
+
+@pytest.fixture
+def donor_token(client, donor_data):
+    register_user(client, donor_data)
+
+    return get_access_token(
+        client,
+        donor_data["email"],
+        donor_data["password"],
+    )
+
+
+@pytest.fixture
+def ngo_token(client, ngo_data):
+    register_user(client, ngo_data)
+
+    return get_access_token(
+        client,
+        ngo_data["email"],
+        ngo_data["password"],
+    )
+
+
+@pytest.fixture
+def admin_token(client, admin_data):
+    register_user(client, admin_data)
+
+    return get_access_token(
+        client,
+        admin_data["email"],
+        admin_data["password"],
+    )

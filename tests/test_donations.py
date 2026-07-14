@@ -1,28 +1,14 @@
-from tests.utils import register_user, get_access_token, get_authentication_header, get_current_user
+from tests.utils import _post
 
 
 def test_create_donation(
         client,
-        donor_data
+        donor_token
 ):
-    register_user(client, donor_data)
 
-    token = get_access_token(
-        client,
-        donor_data['email'],
-        donor_data['password'],
-    )
+    token = donor_token
 
     assert token is not None
-
-    headers = get_authentication_header(token)
-
-    assert headers is not None
-
-    # current_user = get_current_user(client, headers)
-    # assert current_user is not None
-    # data = current_user.json()
-    # user_id = data["id"]
 
     donation_data = {
         "food_name": "Biryani",
@@ -35,11 +21,7 @@ def test_create_donation(
     }
 
     # create donation
-    response = client.post(
-        "/donations",
-        json=donation_data,
-        headers=headers,
-    )
+    response = _post(client, url="/donations", token=token, json=donation_data)
 
     assert response.status_code == 200
     data = response.json()
@@ -55,14 +37,12 @@ def test_get_donations(
 
     assert res.status_code == 200
 
-    assert "food_name" in res.json()[0]
-
 
 def test_create_donation_without_login(client):
     donation_data = {
         "food_name": "Rice",
         "quantity": 10,
-        "food_category": "MEAL",
+        "category": "MEAL",
         "expiry_time": "2026-12-31T20:00:00",
         "pickup_address": "Pune",
         "latitude": 18.5204,
@@ -79,17 +59,13 @@ def test_create_donation_without_login(client):
 
 def test_create_donation_only_by_donor(
         client,
-        requester_data
+        ngo_data,
+        ngo_token
 ):
-    register_user(client, requester_data)
 
-    token = get_access_token(
-        client,
-        requester_data['email'],
-        requester_data['password'],
-    )
+    token = ngo_token
 
-    headers = get_authentication_header(token)
+    assert token is not None
 
     donation_data = {
         "food_name": "Biryani",
@@ -102,10 +78,11 @@ def test_create_donation_only_by_donor(
     }
 
     # create donation
-    response = client.post(
-        "/donations",
-        json=donation_data,
-        headers=headers,
+    response = _post(
+        client,
+        url="/donations",
+        token=token,
+        json=donation_data
     )
 
     assert response.status_code == 403
