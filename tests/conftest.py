@@ -56,3 +56,14 @@ def donor_data():
         "password": "Password123",
         "role": "DONOR",
     }
+
+
+@pytest.fixture
+def requester_data():
+    # Sample donor data
+    return {
+        "name": "Test Requester",
+        "email": "requester@test.com",
+        "password": "Password123",
+        "role": "NGO",
+    }
