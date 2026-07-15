@@ -6,9 +6,7 @@ def test_create_donation(
         donor_token
 ):
 
-    token = donor_token
-
-    assert token is not None
+    assert donor_token is not None
 
     donation_data = {
         "food_name": "Biryani",
@@ -21,7 +19,7 @@ def test_create_donation(
     }
 
     # create donation
-    response = _post(client, url="/donations", token=token, json=donation_data)
+    response = _post(client, url="/donations", token=donor_token, json=donation_data)
 
     assert response.status_code == 200
     data = response.json()
@@ -63,9 +61,7 @@ def test_create_donation_only_by_donor(
         ngo_token
 ):
 
-    token = ngo_token
-
-    assert token is not None
+    assert ngo_token is not None
 
     donation_data = {
         "food_name": "Biryani",
@@ -81,7 +77,7 @@ def test_create_donation_only_by_donor(
     response = _post(
         client,
         url="/donations",
-        token=token,
+        token=ngo_token,
         json=donation_data
     )
 

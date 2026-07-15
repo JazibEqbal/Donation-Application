@@ -17,9 +17,7 @@ def test_register_user(client, donor_data):
 
 def test_login_user_success(client, donor_token):
 
-    token = donor_token
-
-    assert token is not None
+    assert donor_token is not None
 
 
 def test_login_user_failure(client, donor_data):
@@ -37,11 +35,10 @@ def test_get_user_profile(
         donor_data,
         donor_token
 ):
-    token = donor_token
 
-    assert token is not None
+    assert donor_token is not None
 
-    response = _get(client, url="/me", token=token)
+    response = _get(client, url="/me", token=donor_token)
 
     response_data = response.json()
 
