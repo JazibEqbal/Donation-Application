@@ -51,3 +51,9 @@ Docker packages everything the application needs into one unit. Therefore, anyon
     remove a container ─────────► docker rm <container_id>
 
     remove an image ─────────► docker rmi <image>
+
+    docker build ─────────► docker build -t <image_name>:<image_version> .
+
+### Docker File
+- A Dockerfile is simply a step-by-step instructions to build a Docker image.
+- Without a Dockerfile, Docker doesn't know how to package your application.
