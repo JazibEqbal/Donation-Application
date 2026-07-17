@@ -86,6 +86,15 @@ def admin_data():
     )
 
 
+@pytest.fixture
+def volunteer_data():
+    return create_user_data(
+        "Volunteer",
+        "volunteer@test.com",
+        "VOLUNTEER",
+    )
+
+
 # ------ *TOKEN FIXTURES --> create users and return authentication tokens
 @pytest.fixture
 def donor_token(client, donor_data):
@@ -117,4 +126,15 @@ def admin_token(client, admin_data):
         client,
         admin_data["email"],
         admin_data["password"],
+    )
+
+
+@pytest.fixture
+def volunteer_token(client, volunteer_data):
+    register_user(client, volunteer_data)
+
+    return get_access_token(
+        client,
+        volunteer_data["email"],
+        volunteer_data["password"],
     )

@@ -59,7 +59,7 @@ def require_role(required_role: UserRole):
         if current_user.role != required_role:
             raise HTTPException(
                 status_code=403,
-                detail="Access denied",
+                detail="You are not authorized to perform this action.",
             )
 
         return current_user

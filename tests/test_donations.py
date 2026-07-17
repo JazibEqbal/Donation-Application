@@ -18,7 +18,7 @@ def test_create_donation(
         "longitude": 73.8567,
     }
 
-    # create donation
+    # donor creates a donation
     response = _post(client, url="/donations", token=donor_token, json=donation_data)
 
     assert response.status_code == 200
@@ -73,7 +73,7 @@ def test_create_donation_only_by_donor(
         "longitude": 73.8567,
     }
 
-    # create donation
+    # ngo tries to create a donation
     response = _post(
         client,
         url="/donations",

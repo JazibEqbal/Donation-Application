@@ -50,7 +50,7 @@ def pickup_delivery(
 
 
 @router.put(
-    "/{delivery_id}/deliver",
+    "/{delivery_id}/delivered",
     response_model=DeliveryResponse,
 )
 def mark_delivered(

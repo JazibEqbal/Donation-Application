@@ -68,9 +68,10 @@ def pickup_delivery(
     if delivery.status != DeliveryStatus.ASSIGNED:
         raise HTTPException(
             status_code=400,
-            detail="Delivery cannot be picked up",
+            detail="Delivery already picked up",
         )
 
+    delivery.status = DeliveryStatus.PICKED_UP
     delivery.pickup_time = datetime.utcnow()
 
     db.commit()
@@ -97,7 +98,7 @@ def mark_delivered(
     if delivery.status != DeliveryStatus.PICKED_UP:
         raise HTTPException(
             status_code=400,
-            detail="Food has not been picked up yet",
+            detail="Delivery has not been picked up yet",
         )
 
     # Update delivery
