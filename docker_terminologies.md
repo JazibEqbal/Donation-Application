@@ -54,6 +54,14 @@ Docker packages everything the application needs into one unit. Therefore, anyon
 
     docker build ─────────► docker build -t <image_name>:<image_version> .
 
+    create ans run a container: docker run -p <host_port>:<container_port> <image_name>
+
+    start/stop a container: docker start/stop <container_id>
+
+    view logs of a container: docker logs <container_id>
+
+    run a container in detached mode: docker run --p <host_port>:<container_port> --name my_app <image_name>
+    
 ### Docker File
 - A Dockerfile is simply a step-by-step instructions to build a Docker image.
 - Without a Dockerfile, Docker doesn't know how to package your application.
