@@ -76,3 +76,16 @@ Two ways:
 
 - Bind mount: uses folder from local
 
+### Docker Compose:
+Instead of remembering multiple commands, we describe everything in one file.
+A service is simply a container managed by Compose.
+
+    docker compose up --build: up starts the application, --build: rebuild the image
+
+    docker compose up -d --build: run in background
+
+    docker compose down: stops and removes all containers created by Compose.
+
+    docker compose ps
+        
+    docker compose logs <service_name>

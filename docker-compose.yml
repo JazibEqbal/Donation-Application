@@ -1,0 +1,16 @@
+services:
+  app:
+    container_name: donation-platform
+
+    build: .
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      DATABASE_URL: sqlite:///./food_waste.db
+
+    volumes:
+      - ./food_waste.db:/app/food_waste.db
+
+    restart: unless-stopped
