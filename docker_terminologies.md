@@ -65,3 +65,14 @@ Docker packages everything the application needs into one unit. Therefore, anyon
 ### Docker File
 - A Dockerfile is simply a step-by-step instructions to build a Docker image.
 - Without a Dockerfile, Docker doesn't know how to package your application.
+
+### Docker volume
+A Docker volume stores data outside the container. Therefore, to retain the data even after deletion of container we need a volume.
+Two ways:
+- Named volume: (manged by docker)
+    - create: docker volume create <volume_name>
+    - usage: docker run -v <volume_name>:/app/data <container_name>
+
+
+- Bind mount: uses folder from local
+
