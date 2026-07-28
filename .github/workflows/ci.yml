@@ -1,17 +1,24 @@
 name: CI Pipeline
+
 on:
   push:
     branches:
       - master
+
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  setup:
+  test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
 
-      - name: Install python
-        uses: actions/setup-python@v1
+      - name: Install Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
@@ -28,17 +35,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-  test:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run tests
+      - name: Run py tests
         run: pytest
 
   build:
     needs: test
     runs-on: ubuntu-latest
+
     steps:
-      - name: Build docker image
-        run: |
-          docker build -t donation-platform:latest .
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t donation-platform:latest .
