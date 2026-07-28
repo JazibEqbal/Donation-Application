@@ -1,26 +1,33 @@
 name: CI Pipeline
 
 on:
+  # Trigger workflow on pushes to master
   push:
     branches:
       - master
 
+  # Trigger workflow for PRs targeting master
   pull_request:
     branches:
-      - main
+      - master
+
+# Global environment variables
+env:
+  PYTHON_VERSION: "3.12"
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
+      # Clone repository into runner
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Cache pip packages
         uses: actions/cache@v4
@@ -35,16 +42,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Execute test suite
       - name: Run py tests
         run: pytest
 
+  # Build Docker image only if test job passes
   build:
     needs: test
     runs-on: ubuntu-latest
 
+    # Job-specific environment variables
+    env:
+      IMAGE_NAME: donation-platform
+      IMAGE_TAG: latest
+
     steps:
+      # Clone repository again for build
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build -t donation-platform:latest .
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
