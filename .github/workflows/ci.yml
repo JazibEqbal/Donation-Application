@@ -46,9 +46,21 @@ jobs:
       - name: Run py tests
         run: pytest
 
+      - name: Print Success
+        if: success()
+        run: echo "All tests passed!"
+
+      - name: Check JWT
+        run: |
+          echo "${{ secrets.JWT_SECRET }}"
+
   # Build Docker image only if test job passes
   build:
     needs: test
+
+    # runs only if the branch is master
+    if: github.ref == 'refs/heads/master'
+
     runs-on: ubuntu-latest
 
     # Job-specific environment variables
