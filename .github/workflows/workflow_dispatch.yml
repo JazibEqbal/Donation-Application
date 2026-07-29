@@ -1,0 +1,43 @@
+name: Manual Workflow
+
+on:
+  workflow_dispatch:
+
+    inputs:
+
+      environment:
+
+        description: "Select Environment"
+
+        required: true
+
+        default: "development"
+
+        type: choice
+
+        options:
+          - development
+          - testing
+          - production
+
+      version:
+        description: "Version"
+        required: true
+
+jobs:
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Print selected environment
+      - name: Show Environment
+        run: |
+          echo "Deploying to ${{ inputs.environment }}"
+
+      # Print version
+      - name: Show Version
+        run: |
+          echo "Deploying to ${{ inputs.version }}"
