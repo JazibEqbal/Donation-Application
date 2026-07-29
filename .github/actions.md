@@ -233,38 +233,104 @@ Commonly used in deployment pipelines.
 
 ## 13. Reusable Workflows
 
-Create workflows that can be shared across repositories.
+A **Reusable Workflow** is a reusable **entire workflow**, including one or more jobs.
 
-Reusable workflow:
+- Defined in `.github/workflows/*.yml`.
+- Exposed using `workflow_call`.
+- Invoked using `uses:` at the **job** level.
+- Can define its own runners, multiple jobs, matrices, permissions, and environments.
+- Best for standardizing complete CI/CD pipelines across repositories.
+
+**Think of it as:** a reusable **application/pipeline**.
+
+## Example
 
 ```yaml
+# .github/workflows/build.yml
+name: Build
+
 on:
   workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: number
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: temurin
+
+      - run: ./gradlew build
 ```
 
-Invoke it:
+## Usage
 
 ```yaml
-uses: org/repo/.github/workflows/build.yml@main
+# .github/workflows/ci.yml
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      java-version: 21
 ```
 
 ---
 
 ## 14. Composite Actions
 
-Bundle multiple steps into a reusable custom action.
+A **Composite Action** is a reusable collection of **steps** that can be shared across workflows.
 
-Project structure:
+- Defined in an `action.yml` file.
+- Invoked using `uses:` inside a workflow **step**.
+- Runs within the caller's job (inherits `runs-on`, permissions, and environment).
+- Best for reusing common tasks like setup, build, lint, or deployment steps.
 
-```text
-.github/
-└── actions/
-    └── setup-python/
-        └── action.yml
+**Think of it as:** a reusable **function**.
+
+## Example
+
+```yaml
+# .github/actions/setup-java/action.yml
+name: Setup Java
+
+inputs:
+  java-version:
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v4
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: temurin
+
+    - run: java -version
+      shell: bash
 ```
 
-Useful for reducing duplicated workflow logic.
+## Usage
 
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-java
+        with:
+          java-version: 21
+```
 ---
 
 ## 15. Self-hosted Runners

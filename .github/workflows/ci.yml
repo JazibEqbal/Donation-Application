@@ -58,8 +58,8 @@ jobs:
   build:
     needs: test
 
-    # runs only if the branch is master
-    if: github.ref == 'refs/heads/master'
+    # runs only if the branch is main
+    if: github.ref == 'refs/heads/main'
 
     runs-on: ubuntu-latest
 
