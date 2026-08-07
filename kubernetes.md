@@ -556,11 +556,22 @@ This feature is called **Self-Healing**.
 ```
 
 ### Commands
-| Command                              | Purpose                               |
-|--------------------------------------|---------------------------------------|
-| `kubectl apply -f k8s/resource.yaml` | Create or update a resource           |
-| `kubectl get pods`                   | List Pods                             |
-| `kubectl describe pod <name>`        | Detailed Pod information              |
-| `kubectl logs <name>`                | View container logs                   |
-| `kubectl deletw <name>`              | delete resource                       |
-| `minikube image load <image_name>`   | load a local image into minikube      |              
+
+| Command                              | Purpose                                    |
+| ------------------------------------ |--------------------------------------------|
+| `kubectl apply -f k8s/resource.yaml` | Create or update a resource                |
+| `kubectl get <resource>`             | List resources of a specific type          |
+| `kubectl get <resource> <name>`      | Get a specific resource by name            |
+| `kubectl describe <resource> <name>` | Show detailed information about a resource |
+| `kubectl logs <pod-name>`            | View logs for a pod's container            |
+| `kubectl delete <resource> <name>`   | Delete a resource                          |
+| `minikube image load <image-name>`   | Load a local image into Minikube           |
+| `kubectl get pods -n <namespace>`    | Get pods in a specific namespace           |
+| `kubectl get pods -w`                | Watch pods continuously                    |
+| `kubectl get pods -A`                | Get pods from all namespaces               |
+
+Deployment is needed because it manage Pods by handling restarts, scaling, and updates automatically.
+
+Difference between a Pod and a Deployment?
+- Pod: Runs one or more containers but doesn't automatically recover if deleted or crashed.
+- Deployment: Manages Pods, keeps the desired number running, supports scaling, rolling updates, and self-healing.

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: donation-platform-deployment
+  labels:
+    app: donation-application
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: donation-application
+
+  template:
+    metadata:
+      labels:
+        app: donation-application
+
+    spec:
+      containers:
+        - name: donation-platform-container
+          image: donation-platform:1.0
+          ports:
+            - containerPort: 8000
