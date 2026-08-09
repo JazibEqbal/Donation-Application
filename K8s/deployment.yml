@@ -21,3 +21,10 @@ spec:
           image: donation-platform:1.0
           ports:
             - containerPort: 8000
+
+          envFrom:
+            - configMapRef:
+                name: donation-platform-config
+
+            - secretRef:
+                name: donation-platform-secret

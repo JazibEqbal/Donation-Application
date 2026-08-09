@@ -575,3 +575,8 @@ Deployment is needed because it manage Pods by handling restarts, scaling, and u
 Difference between a Pod and a Deployment?
 - Pod: Runs one or more containers but doesn't automatically recover if deleted or crashed.
 - Deployment: Manages Pods, keeps the desired number running, supports scaling, rolling updates, and self-healing.
+
+Service: A Service provides a stable network endpoint for a group of Pods. The Service uses labels to find the Pods.
+
+ConfigMap: A ConfigMap stores non-sensitive configuration.
+Secrets: Secrets are intended for sensitive configuration.
