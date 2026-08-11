@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: donation-platform-deployment
+  namespace: donation-platform
   labels:
     app: donation-application
 spec:
@@ -28,3 +29,17 @@ spec:
 
             - secretRef:
                 name: donation-platform-secret
+
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20

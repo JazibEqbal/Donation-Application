@@ -1,4 +1,4 @@
-# Kubernetes (K8s) Architecture
+## Kubernetes (K8s) Architecture
 
 Kubernetes architecture is easy to understand if you think of it as **a manager running a fleet of servers**.
 
@@ -7,7 +7,7 @@ Kubernetes architecture is easy to understand if you think of it as **a manager 
 
 ---
 
-# High-Level Architecture
+## High-Level Architecture
 
 ```text
                     Kubernetes Cluster
@@ -42,7 +42,7 @@ Kubernetes architecture is easy to understand if you think of it as **a manager 
 
 ---
 
-# Control Plane
+## Control Plane
 
 The **Control Plane** is the brain of Kubernetes.
 
@@ -62,7 +62,7 @@ The Control Plane consists of four major components:
 
 ---
 
-# 1. API Server
+## 1. API Server
 
 The **API Server** is the front door of Kubernetes.
 
@@ -92,7 +92,7 @@ Responsibilities:
 
 ---
 
-# 2. etcd
+## 2. etcd
 
 **etcd** is Kubernetes' database.
 
@@ -129,7 +129,7 @@ Think of etcd as:
 
 ---
 
-# 3. Scheduler
+## 3. Scheduler
 
 The Scheduler decides:
 
@@ -169,7 +169,7 @@ The Scheduler considers:
 
 ---
 
-# 4. Controller Manager
+## 4. Controller Manager
 
 Controllers constantly compare:
 
@@ -212,7 +212,7 @@ Examples of controllers:
 
 ---
 
-# Worker Node
+## Worker Node
 
 Worker Nodes run your applications.
 
@@ -229,7 +229,7 @@ Pods
 
 ---
 
-# 1. kubelet
+## 1. kubelet
 
 kubelet is the agent running on every node.
 
@@ -258,7 +258,7 @@ Status: Running
 
 ---
 
-# 2. Container Runtime
+## 2. Container Runtime
 
 The Container Runtime actually runs containers.
 
@@ -289,7 +289,7 @@ Start container
 
 ---
 
-# 3. kube-proxy
+## 3. kube-proxy
 
 kube-proxy handles networking.
 
@@ -319,7 +319,7 @@ kube-proxy routes traffic to the Pods.
 
 ---
 
-# 4. Pods
+## 4. Pods
 
 Pods are the smallest deployable unit in Kubernetes.
 
@@ -356,7 +356,7 @@ Containers inside the same Pod share:
 
 ---
 
-# End-to-End Flow
+## End-to-End Flow
 
 Suppose you execute:
 
@@ -481,7 +481,7 @@ API Server updates etcd.
 
 ---
 
-# Self-Healing Example
+## Self-Healing Example
 
 Suppose your Pod crashes.
 
@@ -517,7 +517,7 @@ This feature is called **Self-Healing**.
 
 ---
 
-# Complete Architecture Flow
+## Complete Architecture Flow
 
 ```text
             kubectl
@@ -578,5 +578,12 @@ Difference between a Pod and a Deployment?
 
 Service: A Service provides a stable network endpoint for a group of Pods. The Service uses labels to find the Pods.
 
-ConfigMap: A ConfigMap stores non-sensitive configuration.
+ConfigMap: A ConfigMap stores non-sensitive configuration.<br>
 Secrets: Secrets are intended for sensitive configuration.
+
+## Probes
+| Probe               | Purpose                                               | What happens if it fails?                                                                                                                                                                      |
+| ------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Liveness Probe**  | Checks if the application is still running.           | Kubernetes restarts the container.                                                                                                                                                             |
+| **Readiness Probe** | Checks if the application is ready to serve requests. | The pod is removed from the Service endpoints until it becomes ready again.                                                                                                                    |
+| **Startup Probe**   | Checks whether the application has finished starting. | Kubernetes keeps checking; if it repeatedly fails beyond the configured threshold, the container is restarted. While the startup probe is running, liveness and readiness probes are disabled. |

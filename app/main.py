@@ -5,6 +5,7 @@ from app.routers.auth import router as auth_router
 from app.routers.donations import router as donation_router
 from app.routers.requests import router as request_router
 from app.routers.deliveries import router as delivery_router
+from app.routers.k8_health_check import router as k8_health_check_router
 from app.models.donation import Donation
 from app.models.user import User
 from app.models.request import DonationRequest
@@ -21,6 +22,7 @@ app.include_router(auth_router)
 app.include_router(donation_router)
 app.include_router(request_router)
 app.include_router(delivery_router)
+app.include_router(k8_health_check_router)
 
 @app.get("/")
 def home():

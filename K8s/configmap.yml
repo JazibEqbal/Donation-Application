@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: donation-platform-config
+  namespace: donation-platform
 data:
   APP_ENV: "development"
   LOG_LEVEL: "INFO"
