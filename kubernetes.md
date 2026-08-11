@@ -557,18 +557,21 @@ This feature is called **Self-Healing**.
 
 ### Commands
 
-| Command                              | Purpose                                    |
-| ------------------------------------ |--------------------------------------------|
-| `kubectl apply -f k8s/resource.yaml` | Create or update a resource                |
-| `kubectl get <resource>`             | List resources of a specific type          |
-| `kubectl get <resource> <name>`      | Get a specific resource by name            |
-| `kubectl describe <resource> <name>` | Show detailed information about a resource |
-| `kubectl logs <pod-name>`            | View logs for a pod's container            |
-| `kubectl delete <resource> <name>`   | Delete a resource                          |
-| `minikube image load <image-name>`   | Load a local image into Minikube           |
-| `kubectl get pods -n <namespace>`    | Get pods in a specific namespace           |
-| `kubectl get pods -w`                | Watch pods continuously                    |
-| `kubectl get pods -A`                | Get pods from all namespaces               |
+| Command                                          | Purpose                                    |
+|--------------------------------------------------|--------------------------------------------|
+| `kubectl apply -f k8s/resource.yaml`             | Create or update a resource                |
+| `kubectl get <resource>`                         | List resources of a specific type          |
+| `kubectl get <resource> <name>`                  | Get a specific resource by name            |
+| `kubectl describe <resource> <name>`             | Show detailed information about a resource |
+| `kubectl logs <pod-name>`                        | View logs for a pod's container            |
+| `kubectl delete <resource> <name>`               | Delete a resource                          |
+| `minikube image load <image-name>`               | Load a local image into Minikube           |
+| `kubectl get pods -n <namespace>`                | Get pods in a specific namespace           |
+| `kubectl get pods -w`                            | Watch pods continuously                    |
+| `kubectl get pods -A`                            | Get pods from all namespaces               |
+| `kubectl rollout status dep.yml -n <namespace>`  | Watch a rollout                            |
+| `kubectl rollout history dep.yml -n <namespace>` | Check rollout history                      |
+| `kubectl rollout undo dep.yml -n <namespace>`    | Rollback to previous version               |
 
 Deployment is needed because it manage Pods by handling restarts, scaling, and updates automatically.
 
@@ -587,3 +590,40 @@ Secrets: Secrets are intended for sensitive configuration.
 | **Liveness Probe**  | Checks if the application is still running.           | Kubernetes restarts the container.                                                                                                                                                             |
 | **Readiness Probe** | Checks if the application is ready to serve requests. | The pod is removed from the Service endpoints until it becomes ready again.                                                                                                                    |
 | **Startup Probe**   | Checks whether the application has finished starting. | Kubernetes keeps checking; if it repeatedly fails beyond the configured threshold, the container is restarted. While the startup probe is running, liveness and readiness probes are disabled. |
+
+## Resource Requests & Limits
+
+    Requests: Simply means "Kubernetes, please reserve at least this much for my container."
+    Kubernetes looks at their requests when deciding where Pods can run.
+    
+    Limits: "Don't allow this container to use more than this amount."
+    exceeding the limit can result in the container being terminated and restarted.
+    This prevents one application from consuming all available memory on the node.
+
+## Deployment Strategies
+
+### Rolling Update:
+Default deployment strategy. When we want to deploy a new version say v2 of our application, but we can't stop all v1 pods as this will result in application downtime.
+Instead, we can do this gradually and for this Kubernetes provides a rolling update strategy.
+
+- maxSurge means number of pods we can have temporarily during update.
+
+How Does Kubernetes Know the New Pod Is Healthy?<br>
+This is where readiness probe becomes important, health checks and rolling updates work together.
+
+
+### Recreate:
+It is used when application needs complete restart. It stops all the pods, then creates the new pods. Hence, it has a downtime.
+```yaml
+strategy:
+  type: Recreate
+```
+
+### Blue-Green Deployment:
+Blue-Green is usually implemented using two separate application versions. When v2 is ready, change the Service selector.<br>
+Advantage is very fast rollback, test of new version, old version remains available.<br>
+Disadvantage is it requires roughly double the resources and db can be complicated.
+
+### Canary Deployment:
+Canary means releasing the new version to a small percentage of users first to a newer version and then if everything works fine then gradually shifting the users to the newer version.<br>
+A common approach is to run two Deployments with the same service so it routes traffic to both the Deployments.
