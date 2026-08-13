@@ -46,9 +46,10 @@ jobs:
 
       - name: Build Image
         run: |
-          docker build -t ghcr.io/donation-application:${{ github.sha }} .
+          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t "$IMAGE_NAME:${{ github.sha }}" .
 
-      - name: Lpg in tp GHCR
+      - name: Login to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -57,4 +58,5 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          docker push ghcr.io/donation-application:${{ github.sha }}
+          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker push "$IMAGE_NAME:${{ github.sha }}"
