@@ -46,7 +46,7 @@ jobs:
 
       - name: Build Image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+          docker build -t ghcr.io/donation-application:${{ github.sha }} .
 
       - name: Lpg in tp GHCR
         uses: docker/login-action@v3
@@ -57,4 +57,4 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+          docker push ghcr.io/donation-application:${{ github.sha }}
