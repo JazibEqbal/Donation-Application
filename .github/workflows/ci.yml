@@ -1,15 +1,15 @@
 name: CI Pipeline
 
 on:
-  # Trigger workflow on pushes to master
+  # Trigger workflow on pushes to main
   push:
     branches:
-      - master
+      - main
 
-  # Trigger workflow for PRs targeting master
+  # Trigger workflow for PRs targeting main
   pull_request:
     branches:
-      - master
+      - main
 
 # Global environment variables
 env:

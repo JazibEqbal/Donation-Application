@@ -7,6 +7,6 @@ spec:
   selector:
     app: donation-application
     type: NodePort
-    ports:
-      - port: 8000 # port exposed by the Kubernetes Service
-        targetPort: 8000 # port where container is listening
+  ports:
+    - port: 8000 # port exposed by the Kubernetes Service
+      targetPort: 8000 # port where container is listening

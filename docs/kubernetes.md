@@ -593,12 +593,12 @@ Secrets: Secrets are intended for sensitive configuration.
 
 ## Resource Requests & Limits
 
-    Requests: Simply means "Kubernetes, please reserve at least this much for my container."
-    Kubernetes looks at their requests when deciding where Pods can run.
-    
-    Limits: "Don't allow this container to use more than this amount."
-    exceeding the limit can result in the container being terminated and restarted.
-    This prevents one application from consuming all available memory on the node.
+Requests: Simply means "Kubernetes, please reserve at least this much for my container."
+Kubernetes looks at their requests when deciding where Pods can run.<br>
+
+Limits: "Don't allow this container to use more than this amount."
+exceeding the limit can result in the container being terminated and restarted.
+This prevents one application from consuming all available memory on the node.
 
 ## Deployment Strategies
 
@@ -627,3 +627,164 @@ Disadvantage is it requires roughly double the resources and db can be complicat
 ### Canary Deployment:
 Canary means releasing the new version to a small percentage of users first to a newer version and then if everything works fine then gradually shifting the users to the newer version.<br>
 A common approach is to run two Deployments with the same service so it routes traffic to both the Deployments.
+
+
+## PersistentVolumeClaim & Persistent Volume
+To retain data even when a pod is deleted. Pods usually don't directly ask for a PV. Pods use a PVC.
+
+PV = the actual storage i.e., "I have 10 GB of storage available."<br>
+PVC = request for the actual storage i.e., "I need 5 GB of storage."
+
+Create a PV:
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: donation-application-pv
+spec:
+  capacity:
+    storage: 10Gi
+
+  accessModes:
+    - ReadWriteOnce
+
+  persistentVolumeReclaimPolicy: Retain # what happens to the PV's underlying storage when the PVC is deleted.
+
+  hostPath:
+    path: /mnt/donation-data
+```
+
+Create the PVC (will request PV for storage)
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: donation-application-pvc
+  namespace: donation-platform
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  resources:
+    requests:
+      storage: 5Gi
+```
+
+Pod references the PVC not the PV:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: donation-app
+  namespace: donation-platform
+
+spec:
+  containers:
+    - name: donation-app
+      image: donation-app:latest
+
+      volumeMounts:
+        - name: donation-storage
+          mountPath: /app/uploads
+
+  volumes:
+    - name: donation-storage
+      persistentVolumeClaim:
+        claimName: donation-application-pvc
+```
+
+Static provisioning: You manually create the PV, You manually define the storage.<br><br>
+Dynamic provisioning: You only create PVC, and Kubernetes automatically creates/provisions the underlying PV using a StorageClass.<br>
+You define a StorageClass, and Kubernetes provisions the storage automatically i.e., `Pod → PVC → StorageClass → dynamically created PV → Storage backend`
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 10Gi
+``` 
+
+Storage Class:
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+
+provisioner: ebs.csi.aws.com
+
+parameters:
+  type: gp3
+  fsType: ext4
+
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+```
+
+## StatefulSet
+
+A StatefulSet is a Kubernetes workload controller designed for applications that need stable identity and persistent storage. StatefulSets normally work with a Headless Service i.e., `clusterIP: None` and hence the Pods can have stable DNS identities. Kubernetes uses the template to create a different PVC for each StatefulSet Pod.<br>
+Unlike a deployment, StatefulSet gives each Pod a stable name and can give each Pod its own persistent volume.
+Deployment is usually for stateless applications. StatefulSet is for stateful applications.
+
+### Need of StatefulSet over Deployment:
+Suppose you have a database with 2 Pods.
+With a Deployment, the pod are created with random names like `pod-crr4654, pod-abc43`. If `pod-abc43` dies, kubernetes creates a new pod with name `pod-new34` which results in identity change. But with stateful application this is not ideal and that's where StatefulSet comes in and provides pods with stable identity i.e., if `pod-abc43 `dies, kubernetes recreates `pod-abc43`.<br><br>
+Deployment is generally used for stateless applications where Pods are interchangeable. StatefulSet is used for stateful applications that require stable Pod identity, stable network identity, and persistent storage associated with each Pod.
+Eg: A web application can usually use a Deployment, while a database cluster such as MySQL may use a StatefulSet.
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: mysql
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: mysql
+
+  template:
+    metadata:
+      labels:
+        app: mysql
+
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        storageClassName: standard # dynamic provisioning (storage class needs to be defined)
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+```
+What gets created?
+
+Pods:
+
+        mysql-0
+        mysql-1
+        mysql-2
+
+PVCs:
+
+        mysql-data-mysql-0
+        mysql-data-mysql-1
+        mysql-data-mysql-2
