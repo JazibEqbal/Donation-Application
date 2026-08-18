@@ -3,7 +3,7 @@ name: Donation Platform CI/CD
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   PYTHON_VERSION: "3.12"

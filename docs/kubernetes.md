@@ -557,21 +557,22 @@ This feature is called **Self-Healing**.
 
 ### Commands
 
-| Command                                          | Purpose                                    |
-|--------------------------------------------------|--------------------------------------------|
-| `kubectl apply -f k8s/resource.yaml`             | Create or update a resource                |
-| `kubectl get <resource>`                         | List resources of a specific type          |
-| `kubectl get <resource> <name>`                  | Get a specific resource by name            |
-| `kubectl describe <resource> <name>`             | Show detailed information about a resource |
-| `kubectl logs <pod-name>`                        | View logs for a pod's container            |
-| `kubectl delete <resource> <name>`               | Delete a resource                          |
-| `minikube image load <image-name>`               | Load a local image into Minikube           |
-| `kubectl get pods -n <namespace>`                | Get pods in a specific namespace           |
-| `kubectl get pods -w`                            | Watch pods continuously                    |
-| `kubectl get pods -A`                            | Get pods from all namespaces               |
-| `kubectl rollout status dep.yml -n <namespace>`  | Watch a rollout                            |
-| `kubectl rollout history dep.yml -n <namespace>` | Check rollout history                      |
-| `kubectl rollout undo dep.yml -n <namespace>`    | Rollback to previous version               |
+| Command                                           | Purpose                                    |
+|---------------------------------------------------|--------------------------------------------|
+| `kubectl apply -f k8s/resource.yaml`              | Create or update a resource                |
+| `kubectl get <resource>`                          | List resources of a specific type          |
+| `kubectl get <resource> <name>`                   | Get a specific resource by name            |
+| `kubectl describe <resource> <name>`              | Show detailed information about a resource |
+| `kubectl logs <pod-name>`                         | View logs for a pod's container            |
+| `kubectl delete <resource> <name>`                | Delete a resource                          |
+| `minikube image load <image-name>`                | Load a local image into Minikube           |
+| `kubectl get pods -n <namespace>`                 | Get pods in a specific namespace           |
+| `kubectl get pods -w`                             | Watch pods continuously                    |
+| `kubectl get pods -A`                             | Get pods from all namespaces               |
+| `kubectl rollout status dep.yml -n <namespace>`   | Watch a rollout                            |
+| `kubectl rollout history dep.yml -n <namespace>`  | Check rollout history                      |
+| `kubectl rollout undo dep.yml -n <namespace>`     | Rollback to previous version               |
+| `minikube service <name> -n <namespace> --url`    | Get the service url                        |
 
 Deployment is needed because it manage Pods by handling restarts, scaling, and updates automatically.
 

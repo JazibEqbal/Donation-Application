@@ -25,9 +25,10 @@ spec:
     spec:
       containers:
         - name: donation-platform-container
-          image: donation-platform:1.0
+          image: ghcr.io/jazibeqbal/donation-application:8fbd6e14ab722d63700618e253871856a66605df
           ports:
             - containerPort: 8000
+          imagePullPolicy: Always
 
           envFrom:
             - configMapRef:
@@ -56,5 +57,5 @@ spec:
               memory: "128Mi"
 
             limits:
-              cpu: "300m"
-              memory: "256Mi"
+              cpu: "500m"
+              memory: "512Mi"
