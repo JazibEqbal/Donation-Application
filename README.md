@@ -1,4 +1,4 @@
-# Donation Platform
+# Donation Platform Application
 
 A learning-focused backend project built to practice **Python, FastAPI, Pytest, Docker, GitHub Actions, Kubernetes, and Azure DevOps**.
 
@@ -6,7 +6,7 @@ The application provides APIs for managing donations, donors, NGOs, and related 
 
 ---
 
-## Tech Stack
+### Tech Stack
 
 - Python
 - FastAPI
